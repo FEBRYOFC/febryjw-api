@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FebryJW999 - API Documentation</title>
+    <style>
+        /* Konfigurasi Tema Warna (Dark Mode) dan Font */
+        :root {
+            --bg-color: #121212; /* Warna latar belakang utama */
+            --grid-color: rgba(255, 255, 255, 0.05); /* Warna garis grid latar */
+            --card-bg: #1e1e1e; /* Warna latar kartu API */
+            --card-border: #333; /* Warna *border* kartu */
+            --text-main: #e0e0e0; /* Warna teks utama */
+            --text-muted: #888; /* Warna teks pudar (deskripsi) */
+            --font-main: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            --font-mono: "Fira Code", Consolas, Monaco, "Courier New", Courier, monospace; /* Font untuk kode/URL */
+        }
+
+        /* Reset CSS Dasar */
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        /* Styling Body dengan Pola Grid Latar */
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            font-family: var(--font-main);
+            background-image: 
+                linear-gradient(var(--grid-color) 1px, transparent 1px),
+                linear-gradient(90deg, var(--grid-color) 1px, transparent 1px);
+            background-size: 40px 40px;
+            padding: 20px;
+            display: flex;
+            justify-content: center; /* Memposisikan konten di tengah secara horizontal */
+            min-height: 100vh;
+        }
+
+        /* Kontainer Utama */
+        .container {
+            width: 100%;
+            max-width: 800px;
+            padding-top: 40px;
+        }
+
+        /* Judul Besar di Atas */
+        .header-title {
+            font-size: 28px;
+            font-weight: bold;
+            margin-bottom: 30px;
+            color: #fff;
+            text-align: center;
+            letter-spacing: -0.5px;
+        }
+
+        /* Kartu Utama Endpoint */
+        .endpoint-card {
+            background-color: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.3), 0 4px 6px -2px rgba(0, 0, 0, 0.2);
+        }
+
+        /* Header Kartu (Bisa diklik untuk buka/tutup) */
+        .endpoint-header {
+            padding: 18px 20px;
+            cursor: pointer;
+            user-select: none;
+            background-color: #252525;
+            transition: background-color 0.2s;
+            border-bottom: 1px solid transparent;
+        }
+
+        .endpoint-header:hover {
+            background-color: #2a2a2a;
+        }
+
+        /* Ketika kartu aktif/terbuka, beri border bawah pada header */
+        .endpoint-card.active .endpoint-header {
+            border-bottom-color: var(--card-border);
+        }
+
+        /* Baris Pertama Header: Method, Judul, Panah */
+        .endpoint-title-row {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 12px;
+        }
+
+        /* Badge Hijau untuk Method GET */
+        .badge-get {
+            background-color: #1b5e20; /* Hijau tua */
+            color: #a5d6a7; /* Hijau muda */
+            padding: 4px 10px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: bold;
+            letter-spacing: 0.5px;
+        }
+
+        /* Judul Endpoint */
+        .endpoint-title {
+            font-size: 17px;
+            font-weight: 600;
+            flex-grow: 1;
+            color: #fff;
+        }
+
+        /* Ikon Panah (Chevron) */
+        .chevron {
+            color: var(--text-muted);
+            transition: transform 0.3s ease;
+        }
+
+        /* Putar panah ke atas jika kartu aktif */
+        .endpoint-card.active .chevron {
+            transform: rotate(180deg);
+        }
+
+        /* Baris Kedua Header: Path Endpoint (Abstrak) */
+        .endpoint-path-row {
+            background-color: #1a1a1a;
+            padding: 12px;
+            border-radius: 4px;
+            font-family: var(--font-mono);
+            font-size: 13px;
+            color: var(--text-muted);
+        }
+
+        /* Tubuh Kartu (Hanya muncul jika kartu aktif) */
+        .endpoint-body {
+            display: none;
+            padding: 25px 20px;
+        }
+
+        /* Tampilkan tubuh kartu jika class 'active' ada */
+        .endpoint-card.active .endpoint-body {
+            display: block;
+        }
+
+        /* Styling Teks Deskripsi */
+        .endpoint-description {
+            color: var(--text-muted);
+            font-size: 14px;
+            line-height: 1.6;
+            margin-bottom: 25px;
+        }
+
+        /* Judul Seksi (contoh: ENDPOINT URL) */
+        .section-title {
+            font-size: 12px;
+            font-weight: bold;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        /* Ikon Tautan kecil di sebelah judul seksi */
+        .icon-link {
+            opacity: 0.6;
+        }
+
+        /* Kontainer untuk Blok Kode/URL */
+        .code-block-container {
+            border: 1px solid var(--card-border);
+            border-radius: 8px;
+            background-color: #111;
+            overflow: hidden;
+            display: flex;
+            align-items: center; /* Memposisikan teks URL dan tombol secara vertikal di tengah */
+            padding-right: 12px;
+        }
+
+        /* Isi URL (Teks yang bisa disalin) */
+        .code-content {
+            padding: 16px;
+            font-family: var(--font-mono);
+            font-size: 13px;
+            overflow-x: auto; /* Memungkinkan *scroll* horizontal jika URL terlalu panjang */
+            white-space: nowrap; /* Mencegah URL turun ke baris baru */
+            color: #a6e22e; /* Warna hijau untuk URL */
+            flex-grow: 1;
+        }
+
+        /* Styling Tombol Copy */
+        .copy-btn {
+            background-color: #333;
+            border: 1px solid #444;
+            color: #fff;
+            cursor: pointer;
+            font-size: 12px;
+            font-weight: 600;
+            padding: 6px 14px;
+            border-radius: 4px;
+            transition: all 0.2s ease;
+            white-space: nowrap; /* Mencegah teks tombol patah baris */
+            margin-left: 10px;
+        }
+
+        /* Efek Hover Tombol Copy */
+        .copy-btn:hover {
+            background-color: #444;
+            border-color: #555;
+        }
+
+        /* State Tombol setelah berhasil disalin (hijau) */
+        .copy-btn.copied {
+            background-color: #2e7d32; /* Hijau sukses */
+            border-color: #2e7d32;
+            color: #fff;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <div class="header-title">FebryJW999 - API Documentation</div>
+
+        <div class="endpoint-card active" id="apiCard">
+            <div class="endpoint-header" onclick="toggleCard()">
+                <div class="endpoint-title-row">
+                    <span class="badge-get">GET</span>
+                    <span class="endpoint-title">Youtube Play MP3</span>
+                    <svg class="chevron" width="18" height="18" fill="currentColor" viewBox="0 0 16 16">
+                        <path fill-rule="evenodd" d="M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708z"/>
+                    </svg>
+                </div>
+                <div class="endpoint-path-row">
+                    /api/v1/youtube/ytplaymp3
+                </div>
+            </div>
+
+            <div class="endpoint-body">
+                
+                <div class="endpoint-description">
+                    Endpoint ini digunakan untuk mencari dan memutar audio dari YouTube berdasarkan kata kunci pencarian (judul lagu).
+                </div>
+
+                <div class="section-title">
+                    <svg class="icon-link" width="14" height="14" fill="currentColor" viewBox="0 0 16 16">
+                        <path d="M4.715 6.542 3.343 7.914a3 3 0 1 0 4.243 4.243l1.828-1.829A3 3 0 0 0 8.586 5.5L8 6.086a1.002 1.002 0 0 0-.154.199 2 2 0 0 1 .861 3.337L6.88 11.45a2 2 0 1 1-2.83-2.83l.793-.792a4.018 4.018 0 0 1-.128-1.287z"/>
+                        <path d="M6.586 4.672A3 3 0 0 0 7.414 9.5l.775-.776a2 2 0 0 1-.896-3.346L9.12 3.55a2 2 0 1 1 2.83 2.83l-.793.792c.112.42.155.855.128 1.287l1.372-1.372a3 3 0 1 0-4.243-4.243L6.586 4.672z"/>
+                    </svg>
+                    ENDPOINT URL
+                </div>
+
+                <div class="code-block-container">
+                    <div class="code-content" id="urlContent">https://febryjw-api.vercel.app/api/v1/youtube/ytplaymp3?query=</div>
+                    <button class="copy-btn" id="copyBtn" onclick="copyApiUrl()">Copy</button>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Fungsi untuk Buka/Tutup (Toggle) Card Endpoint
+        function toggleCard() {
+            const card = document.getElementById('apiCard');
+            card.classList.toggle('active');
+        }
+
+        // Fungsi JavaScript untuk menyalin URL API ke Clipboard
+        function copyApiUrl() {
+            const urlText = document.getElementById('urlContent').innerText; // Ambil teks URL
+            const copyBtn = document.getElementById('copyBtn'); // Ambil elemen tombol
+
+            // Menggunakan API Clipboard modern yang didukung oleh browser saat ini
+            navigator.clipboard.writeText(urlText).then(() => {
+                // Tampilkan indikator visual bahwa penyalinan berhasil
+                copyBtn.innerText = "Copied!"; // Ubah teks tombol
+                copyBtn.classList.add("copied"); // Tambahkan class CSS (warna hijau)
+
+                // Kembalikan tombol ke status awal setelah 2 detik
+                setTimeout(() => {
+                    copyBtn.innerText = "Copy";
+                    copyBtn.classList.remove("copied");
+                }, 2000);
+            }).catch(err => {
+                // Penanganan jika browser tidak mendukung Clipboard API atau terjadi error
+                console.error('Gagal menyalin URL: ', err);
+                alert("Gagal menyalin URL.");
+            });
+        }
+    </script>
+</body>
+</html>
